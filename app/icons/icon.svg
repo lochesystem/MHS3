@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#0d1117"/>
+  <rect x="24" y="24" width="464" height="464" rx="48" fill="none" stroke="#1f6feb" stroke-width="4"/>
+  <!-- Sword/claw shape representing MH -->
+  <g transform="translate(256,240)">
+    <!-- Power triangle (red) -->
+    <polygon points="-90,-80 -30,-80 -60,-30" fill="#ef4444" opacity="0.9"/>
+    <!-- Speed triangle (blue) -->
+    <polygon points="30,-80 90,-80 60,-30" fill="#3b82f6" opacity="0.9"/>
+    <!-- Technical triangle (green) -->
+    <polygon points="-30,0 30,0 0,50" fill="#22c55e" opacity="0.9"/>
+    <!-- Center diamond -->
+    <polygon points="0,-50 30,-20 0,10 -30,-20" fill="#e6edf3" opacity="0.95"/>
+  </g>
+  <!-- Text -->
+  <text x="256" y="380" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="700" font-size="72" fill="#e6edf3">MHS3</text>
+  <text x="256" y="420" text-anchor="middle" font-family="Segoe UI,system-ui,sans-serif" font-weight="400" font-size="28" fill="#8b949e">GUIA</text>
+</svg>

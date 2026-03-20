@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHS3 - Guia de Fraquezas dos Monstros</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;
+  --fire:#ff6b35;--water:#4dabf7;--thunder:#ffd43b;--ice:#74c0fc;
+  --dragon:#c084fc;--poison:#a78bfa;--para:#fbbf24;--sleep:#60a5fa;
+  --blast:#fb923c;--stun:#facc15;--bleed:#f87171;--nonelem:#94a3b8;
+  --weak:#ef4444;--resist:#22c55e;--neutral:#64748b;
+  --ss:#fbbf24;--s:#a78bfa;--a:#58a6ff;--b:#94a3b8;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:2rem 1rem;text-align:center;border-bottom:2px solid var(--accent2)}
+header h1{font-size:1.8rem;margin-bottom:.3rem;background:linear-gradient(90deg,var(--fire),var(--thunder),var(--ice),var(--dragon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:var(--text2);font-size:.95rem}
+
+.container{max-width:1200px;margin:0 auto;padding:1rem}
+
+.search-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.search-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;min-width:200px;padding:.7rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--text2)}
+select{padding:.7rem .8rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;outline:none;cursor:pointer}
+select:focus{border-color:var(--accent)}
+.result-count{color:var(--text2);font-size:.85rem;margin-top:.5rem}
+
+.monster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
+
+.monster-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .15s,border-color .15s}
+.monster-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--surface2)}
+.card-header h3{font-size:1.1rem;display:flex;align-items:center;gap:.5rem}
+.monster-rank{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--accent2);color:#fff}
+.tier-badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px;color:#000}
+.tier-ss{background:var(--ss)}.tier-s{background:var(--s);color:#fff}.tier-a{background:var(--a);color:#fff}.tier-b{background:var(--b);color:#000}
+
+.card-body{padding:1rem 1.2rem}
+.info-row{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-bottom:.8rem;font-size:.85rem}
+.info-tag{padding:2px 10px;border-radius:6px;background:var(--surface2);border:1px solid var(--border)}
+.elem-tag{font-weight:600}
+.elem-fire{color:var(--fire);border-color:var(--fire)}.elem-water{color:var(--water);border-color:var(--water)}
+.elem-thunder{color:var(--thunder);border-color:var(--thunder)}.elem-ice{color:var(--ice);border-color:var(--ice)}
+.elem-dragon{color:var(--dragon);border-color:var(--dragon)}.elem-none{color:var(--nonelem);border-color:var(--nonelem)}
+
+.section-label{font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;margin-top:.6rem}
+
+.weakness-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:.6rem}
+.weakness-cell{text-align:center;padding:4px 2px;border-radius:6px;font-size:.75rem;font-weight:600;line-height:1.2}
+.weakness-cell .elem-name{display:block;font-size:.6rem;font-weight:400;opacity:.8;margin-bottom:1px}
+.wk-veryweak{background:rgba(239,68,68,.2);color:#fca5a5}
+.wk-weak{background:rgba(251,146,60,.15);color:#fdba74}
+.wk-neutral{background:rgba(100,116,139,.15);color:#94a3b8}
+.wk-resist{background:rgba(34,197,94,.15);color:#86efac}
+.wk-immune{background:rgba(34,197,94,.25);color:#4ade80}
+
+.ailment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:.6rem}
+.ailment-cell{text-align:center;padding:3px 2px;border-radius:6px;font-size:.72rem;line-height:1.2}
+.ailment-cell .ail-name{display:block;font-size:.6rem;opacity:.8;margin-bottom:1px}
+
+.stat-bar-container{margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem;font-size:.78rem}
+.stat-label{width:55px;text-align:right;color:var(--text2)}
+.stat-bar-bg{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.stat-bar{height:100%;border-radius:4px;transition:width .3s}
+.stat-hp .stat-bar{background:linear-gradient(90deg,#22c55e,#4ade80)}
+.stat-atk .stat-bar{background:linear-gradient(90deg,#ef4444,#f87171)}
+.stat-spd .stat-bar{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.stat-def .stat-bar{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.stat-val{width:20px;font-weight:600;font-size:.75rem}
+
+.card-footer{padding:.6rem 1.2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.8rem}
+.egg-location{color:var(--text2);font-size:.78rem}
+.game8-link{color:var(--accent);font-weight:500;font-size:.78rem}
+
+.no-results{text-align:center;padding:3rem;color:var(--text2)}
+.no-results h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--text)}
+
+.legend{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.5rem}
+.legend summary{cursor:pointer;font-weight:600;color:var(--accent);font-size:.9rem}
+.legend-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.legend-item{display:flex;align-items:center;gap:.3rem;font-size:.78rem}
+.legend-dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+.pattern-section{margin-bottom:.6rem}
+.pattern-table{width:100%;border-collapse:separate;border-spacing:0 3px}
+.pattern-table td{padding:4px 8px;font-size:.75rem;border-radius:4px}
+.pattern-table .pt-state{color:var(--text2);width:45%;background:var(--surface2)}
+.pattern-table .pt-uses{width:27%;text-align:center;font-weight:700}
+.pattern-table .pt-counter{width:28%;text-align:center;font-weight:600;font-size:.7rem}
+.pt-P{background:rgba(239,68,68,.2);color:#fca5a5}
+.pt-S{background:rgba(59,130,246,.2);color:#93c5fd}
+.pt-T{background:rgba(34,197,94,.2);color:#86efac}
+.pt-counter-P{background:rgba(239,68,68,.12);color:#fca5a5}
+.pt-counter-S{background:rgba(59,130,246,.12);color:#93c5fd}
+.pt-counter-T{background:rgba(34,197,94,.12);color:#86efac}
+.pt-header{font-size:.65rem;color:var(--text2);text-transform:uppercase;letter-spacing:.3px;padding:2px 8px !important;background:transparent !important}
+
+footer{text-align:center;padding:2rem 1rem;color:var(--text2);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+
+@media(max-width:480px){
+  .monster-grid{grid-template-columns:1fr}
+  .search-row{flex-direction:column}
+  .weakness-grid{grid-template-columns:repeat(5,1fr)}
+  header h1{font-size:1.3rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Monster Hunter Stories 3: Twisted Reflection</h1>
+  <p>Guia Interativo de Fraquezas dos Monstros</p>
+</header>
+
+<div class="container">
+  <div class="search-section">
+    <div class="search-row">
+      <input type="text" id="searchInput" class="search-input" placeholder="Buscar monstro pelo nome..." autocomplete="off">
+      <select id="filterElement">
+        <option value="">Todos os Elementos</option>
+        <option value="Fire">Fire</option>
+        <option value="Water">Water</option>
+        <option value="Thunder">Thunder</option>
+        <option value="Ice">Ice</option>
+        <option value="Dragon">Dragon</option>
+        <option value="Non-Elem">Non-Elem</option>
+      </select>
+      <select id="filterGenus">
+        <option value="">Todos os Tipos</option>
+        <option value="Flying Wyvern">Flying Wyvern</option>
+        <option value="Brute Wyvern">Brute Wyvern</option>
+        <option value="Fanged Wyvern">Fanged Wyvern</option>
+        <option value="Bird Wyvern">Bird Wyvern</option>
+        <option value="Leviathan">Leviathan</option>
+        <option value="Fanged Beast">Fanged Beast</option>
+        <option value="Piscine Wyvern">Piscine Wyvern</option>
+        <option value="Temnoceran">Temnoceran</option>
+        <option value="Amphibian">Amphibian</option>
+        <option value="Carapaceon">Carapaceon</option>
+        <option value="Elder Dragon">Elder Dragon</option>
+      </select>
+      <select id="filterTier">
+        <option value="">Todos os Tiers</option>
+        <option value="SS">SS</option>
+        <option value="S">S</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+      </select>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+
+  <details class="legend">
+    <summary>Legenda de Fraquezas, Resistencias e Padroes de Ataque</summary>
+    <div class="section-label" style="margin-top:.6rem">Fraquezas / Resistencias</div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(239,68,68,.4)"></span> Muito Fraco</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(251,146,60,.3)"></span> Fraco</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(100,116,139,.3)"></span> Neutro</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(34,197,94,.25)"></span> Resistente</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(34,197,94,.4)"></span> Imune</div>
+    </div>
+    <div class="section-label" style="margin-top:.8rem">Padroes de Ataque (Head-to-Head)</div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(239,68,68,.4)"></span> Power &rarr; vencido por Speed</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(59,130,246,.4)"></span> Speed &rarr; vencido por Technical</div>
+      <div class="legend-item"><span class="legend-dot" style="background:rgba(34,197,94,.4)"></span> Technical &rarr; vencido por Power</div>
+    </div>
+    <p style="font-size:.75rem;color:var(--text2);margin-top:.5rem">Cada monstro usa um tipo de ataque dominante dependendo do seu estado atual (Normal, Enraged, etc). A tabela mostra o que o monstro usa e qual tipo voce deve usar para vencer o head-to-head.</p>
+  </details>
+
+  <div class="monster-grid" id="monsterGrid"></div>
+  <div class="no-results" id="noResults" style="display:none">
+    <h3>Nenhum monstro encontrado</h3>
+    <p>Tente buscar com outro nome ou remover os filtros.</p>
+  </div>
+</div>
+
+<footer>
+  <p>Dados compilados de <a href="https://game8.co/games/Monster-Hunter-Stories-3" target="_blank">Game8 MHS3 Wiki</a>. Todos os direitos pertencem a CAPCOM Co., Ltd.</p>
+</footer>
+
+<script>
+const MONSTERS = [
+  {name:"Ajarakan",genus:"Fanged Beast",element:"Fire",rank:"5★",attackType:"Technical",tier:"A",
+   patterns:{Normal:"T",Overheated:"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:0,stun:2,bleed:1},
+   stats:{hp:7,atk:7,spd:5,def:5},egg:"Tarkuan - Bountiful Dunes, Rococo Rocks",link:"587100"},
+  {name:"Aknosom",genus:"Bird Wyvern",element:"Fire",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"P"},
+   weakElem:{fire:0,water:3,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:2,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:6,spd:6,def:6},egg:"Canalta Timberland - Mt. Canalta, Howlinyowl Forest",link:"586452"},
+  {name:"Almudron",genus:"Leviathan",element:"Water",rank:"5★",attackType:"Power",tier:"B",
+   patterns:{Normal:"P",Enraged:"T","Large Mudbulb":"S"},
+   weakElem:{fire:2,water:0,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:6,def:6},egg:"Tarkuan - Bountiful Dunes, Broadleaf Basin",link:"586551"},
+  {name:"Anjanath",genus:"Brute Wyvern",element:"Fire",rank:"4★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Condense Heat":"T"},
+   weakElem:{fire:0,water:3,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:5,def:5},egg:"Azuria - Broadleaf Basin",link:"586309"},
+  {name:"Arkveld",genus:"Flying Wyvern",element:"Dragon",rank:"6★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Dragon Mantle":"P"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:0,blast:1,stun:1,bleed:1},
+   stats:{hp:8,atk:8,spd:6,def:6},egg:"Serathis - Defeat Arkveld",link:"587113"},
+  {name:"Arzuros",genus:"Fanged Beast",element:"Non-Elem",rank:"2★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:2,water:1,thunder:1,ice:2,dragon:0},ailments:{poison:2,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:4,spd:5,def:5},egg:"Canalta Timberland - Cataracts",link:"586456"},
+  {name:"Astalos",genus:"Flying Wyvern",element:"Thunder",rank:"5★",attackType:"Speed",tier:"A",
+   patterns:{Normal:"S",Bolt:"P"},
+   weakElem:{fire:2,water:1,thunder:0,ice:2,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:5,atk:8,spd:8,def:8},egg:"Azuria - Mirror Lake (Defeat Invasive Seregios)",link:"586449"},
+  {name:"Aurora Somnacanth",genus:"Leviathan",element:"Ice",rank:"5★",attackType:"Technical",tier:"A",
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:2,water:0,thunder:2,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:0,blast:1,stun:2,bleed:1},
+   stats:{hp:6,atk:6,spd:7,def:7},egg:"Canalta Timberland",link:"586552"},
+  {name:"Azure Rathalos",genus:"Flying Wyvern",element:"Fire",rank:"6★",attackType:"Power",tier:"A",
+   patterns:{Normal:"P"},
+   weakElem:{fire:0,water:2,thunder:1,ice:2,dragon:3},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:8,spd:6,def:6},egg:"Habitat Restoration - Rathalos Rank A",link:"586793"},
+  {name:"Barioth",genus:"Flying Wyvern",element:"Ice",rank:"4★",attackType:"Technical",tier:"S",
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:3,water:0,thunder:2,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:5,atk:6,spd:8,def:8},egg:"Repel Invasive Khezu",link:"586593"},
+  {name:"Barroth",genus:"Brute Wyvern",element:"Water",rank:"3★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S","Mud Mantle":"T"},
+   weakElem:{fire:2,water:0,thunder:1,ice:2,dragon:0},ailments:{poison:2,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:5,spd:4,def:6},egg:"Tarkuan",link:"587045"},
+  {name:"Bishaten",genus:"Fanged Beast",element:"Non-Elem",rank:"3★",attackType:"Technical",tier:"B",
+   patterns:{Normal:"T",Balancing:"S"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:5,spd:6,def:5},egg:"Canalta Timberland - Blessing Hill",link:"586450"},
+  {name:"Black Diablos",genus:"Flying Wyvern",element:"Non-Elem",rank:"6★",attackType:"Power",tier:"A",
+   patterns:{Normal:"P",Enraged:"S",Burrowed:"S"},
+   weakElem:{fire:1,water:2,thunder:1,ice:3,dragon:1},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:8,atk:8,spd:5,def:7},egg:"Tarkuan - Bountiful Dunes",link:"587109"},
+  {name:"Black Gravios",genus:"Flying Wyvern",element:"Fire",rank:"6★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:0,water:3,thunder:1,ice:1,dragon:2},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:7,atk:6,spd:3,def:8},egg:"Tarkuan - Broadleaf Basin",link:"586539"},
+  {name:"Blangonga",genus:"Fanged Beast",element:"Ice",rank:"3★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"S"},
+   weakElem:{fire:3,water:0,thunder:2,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:6,def:5},egg:"Serathis - Glacial Caps",link:null},
+  {name:"Blood Orange Bishaten",genus:"Fanged Beast",element:"Fire",rank:"4★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:0,water:2,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:0,stun:1,bleed:1},
+   stats:{hp:5,atk:6,spd:6,def:5},egg:"Tarkuan - Broadleaf Basin, Blightstone Woods",link:"586538"},
+  {name:"Bloodbath Diablos",genus:"Flying Wyvern",element:"Non-Elem",rank:"7★",attackType:"Speed",tier:"S",
+   patterns:{Normal:"S"},
+   weakElem:{fire:1,water:2,thunder:1,ice:3,dragon:1},ailments:{poison:1,para:2,sleep:1,blast:0,stun:1,bleed:1},
+   stats:{hp:7,atk:9,spd:6,def:5},egg:"Habitat Restoration - Diablos Rank S",link:"586795"},
+  {name:"Blue Yian Kut-Ku",genus:"Bird Wyvern",element:"Water",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:2,water:0,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:2,blast:1,stun:1,bleed:1},
+   stats:{hp:4,atk:5,spd:5,def:4},egg:"Azuria - Blessing Hill, Howlinyowl Forest",link:"586445"},
+  {name:"Boltreaver Astalos",genus:"Flying Wyvern",element:"Thunder",rank:"7★",attackType:"Technical",tier:"SS",
+   patterns:{Normal:"T"},
+   weakElem:{fire:2,water:1,thunder:0,ice:2,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:7,atk:8,spd:8,def:5},egg:"Habitat Restoration - Astalos Mutation",link:"586448"},
+  {name:"Brachydios",genus:"Brute Wyvern",element:"Non-Elem",rank:"6★",attackType:"Power",tier:"S",
+   patterns:{Normal:"P","Slime Active":"S","Slime Depleted":"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:0,stun:2,bleed:1},
+   stats:{hp:7,atk:8,spd:6,def:6},egg:"Serathis - Blightstone Woods",link:"586541"},
+  {name:"Brute Tigrex",genus:"Flying Wyvern",element:"Non-Elem",rank:"6★",attackType:"Power",tier:"SS",
+   patterns:{Normal:"P",Enraged:"S"},
+   weakElem:{fire:1,water:3,thunder:1,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:0,bleed:1},
+   stats:{hp:7,atk:8,spd:7,def:6},egg:"Habitat Restoration - Tigrex Rank A",link:"586608"},
+  {name:"Canyne",genus:"Fanged Beast",element:"Non-Elem",rank:"5★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S"},
+   weakElem:{fire:1,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:4,atk:4,spd:5,def:4},egg:"Canalta Timberland - Main Story",link:"586451"},
+  {name:"Chatacabra",genus:"Amphibian",element:"Non-Elem",rank:"1★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Rock Mantle":"T"},
+   weakElem:{fire:2,water:1,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:5,spd:3,def:6},egg:"Azuria - Blessing Hill, Howlinyowl Forest",link:"586322"},
+  {name:"Deadeye Yian Garuga",genus:"Bird Wyvern",element:"Fire",rank:"7★",attackType:"Speed",tier:"A",
+   patterns:{Normal:"S"},
+   weakElem:{fire:0,water:2,thunder:2,ice:2,dragon:1},ailments:{poison:0,para:1,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:6,atk:7,spd:8,def:5},egg:"Habitat Restoration - Rank S w/ 3 5★+ Monsters",link:"586618"},
+  {name:"Deviljho",genus:"Brute Wyvern",element:"Dragon",rank:"7★",attackType:"Power",tier:"SS",
+   patterns:{Normal:"P",Enraged:"S",Starving:"P"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:3},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:8,atk:9,spd:5,def:7},egg:"Serathis - Old Capital Road",link:"586790"},
+  {name:"Diablos",genus:"Flying Wyvern",element:"Non-Elem",rank:"5★",attackType:"Power",tier:"A",
+   patterns:{Normal:"P",Enraged:"S",Burrowed:"S"},
+   weakElem:{fire:1,water:2,thunder:1,ice:3,dragon:1},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:8,spd:5,def:7},egg:"Tarkuan - Bountiful Dunes",link:"587110"},
+  {name:"Dreadking Rathalos",genus:"Flying Wyvern",element:"Fire",rank:"7★",attackType:"Power",tier:"S",
+   patterns:{Normal:"P"},
+   weakElem:{fire:0,water:2,thunder:1,ice:1,dragon:3},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:9,spd:7,def:6},egg:"Habitat Restoration - Rathalos Rank S w/ 4 Flying Wyverns",link:"586794"},
+  {name:"Dreadqueen Rathian",genus:"Flying Wyvern",element:"Fire",rank:"7★",attackType:"Speed",tier:"SS",
+   patterns:{Normal:"S"},
+   weakElem:{fire:0,water:2,thunder:1,ice:1,dragon:3},ailments:{poison:0,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:7,spd:6,def:6},egg:"Azuria - Rathian Rank S w/ 3 Poison Monsters",link:"586311"},
+  {name:"Ebony Odogaron",genus:"Fanged Wyvern",element:"Dragon",rank:"6★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Starving:"S",Frenzied:"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:5,atk:7,spd:8,def:4},egg:"Tarkuan",link:"587103"},
+  {name:"Espinas",genus:"Flying Wyvern",element:"Fire",rank:"6★",attackType:"Power",tier:"SS",
+   patterns:{Normal:"P",Sleep:"S",Enraged:"P"},
+   weakElem:{fire:0,water:1,thunder:2,ice:2,dragon:2},ailments:{poison:0,para:0,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:8,atk:8,spd:6,def:7},egg:"Tarkuan/Azuria - Defeat Espinas",link:"586536"},
+  {name:"Fulgur Anjanath",genus:"Brute Wyvern",element:"Thunder",rank:"6★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Electric Charge":"S","High-Voltage Charge":"S"},
+   weakElem:{fire:1,water:2,thunder:0,ice:3,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:5,def:5},egg:"Serathis",link:"587105"},
+  {name:"Garangolm",genus:"Fanged Beast",element:"Non-Elem",rank:"4★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Lava Mantle":"S","Moss Mantle":"T"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:7,atk:7,spd:4,def:7},egg:"Canalta Timberland / Tarkuan",link:"586547"},
+  {name:"Glavenus",genus:"Brute Wyvern",element:"Fire",rank:"5★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S","Overheated Throat":"T","Overheated Tail":"P"},
+   weakElem:{fire:0,water:3,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:8,spd:5,def:5},egg:"Serathis",link:"587099"},
+  {name:"Goss Harag",genus:"Fanged Beast",element:"Ice",rank:"5★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Enraged (Frost Knuckles)":"T","Enraged (Frost Blade)":"S"},
+   weakElem:{fire:3,water:0,thunder:1,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:7,atk:8,spd:4,def:6},egg:"Serathis - Glacial Caps, Frozen Grotto",link:"587107"},
+  {name:"Gravios",genus:"Flying Wyvern",element:"Fire",rank:"5★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Overheated:"T"},
+   weakElem:{fire:0,water:3,thunder:1,ice:1,dragon:2},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:7,atk:6,spd:3,def:9},egg:"Serathis",link:"587104"},
+  {name:"Great Izuchi",genus:"Bird Wyvern",element:"Non-Elem",rank:"1★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:0},ailments:{poison:2,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:4,atk:4,spd:6,def:4},egg:"Canalta Timberland",link:"586561"},
+  {name:"Great Poogie",genus:"Fanged Beast",element:"Non-Elem",rank:"1★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T"},
+   weakElem:{fire:1,water:1,thunder:1,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:3,spd:5,def:5},egg:"Azuria - Find all Poogies",link:"587097"},
+  {name:"Green Nargacuga",genus:"Flying Wyvern",element:"Non-Elem",rank:"5★",attackType:"Speed",tier:"S",
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:6,atk:7,spd:8,def:6},egg:"Habitat Restoration - Nargacuga Rank A",link:"586548"},
+  {name:"Green Plesioth",genus:"Piscine Wyvern",element:"Water",rank:"5★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"T"},
+   weakElem:{fire:2,water:0,thunder:3,ice:1,dragon:0},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:4,def:5},egg:"Azuria",link:"586315"},
+  {name:"Grimclaw Tigrex",genus:"Flying Wyvern",element:"Non-Elem",rank:"7★",attackType:"Power",tier:"A",
+   patterns:{Normal:"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:9,spd:6,def:5},egg:"Habitat Restoration - Rank S w/ 4 Power Monsters",link:"586800"},
+  {name:"Gypceros",genus:"Bird Wyvern",element:"Non-Elem",rank:"2★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:2,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:5,atk:4,spd:5,def:5},egg:"Azuria",link:"586320"},
+  {name:"Hellblade Glavenus",genus:"Brute Wyvern",element:"Fire",rank:"7★",attackType:"Speed",tier:"A",
+   patterns:{Normal:"S"},
+   weakElem:{fire:0,water:3,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:0,stun:1,bleed:1},
+   stats:{hp:6,atk:9,spd:5,def:4},egg:"Habitat Restoration - Rank S w/ 4 Sharp Appendage Monsters",link:"586792"},
+  {name:"Ivory Lagiacrus",genus:"Leviathan",element:"Thunder",rank:"6★",attackType:"Speed",tier:"S",
+   patterns:{Normal:"S","Electric Charge":"P","Fulgurite Mantle":"T"},
+   weakElem:{fire:2,water:1,thunder:0,ice:2,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:7,atk:7,spd:6,def:7},egg:"Azuria - Lagiacrus Rank A Habitat Restoration",link:"586447"},
+  {name:"Jade Barroth",genus:"Brute Wyvern",element:"Ice",rank:"4★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Snow Mantle":"T"},
+   weakElem:{fire:3,water:0,thunder:1,ice:0,dragon:1},ailments:{poison:2,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:5,spd:4,def:7},egg:"Serathis",link:"587046"},
+  {name:"Khezu",genus:"Flying Wyvern",element:"Thunder",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Electric Charge":"P"},
+   weakElem:{fire:3,water:1,thunder:0,ice:1,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:5,spd:4,def:6},egg:"Canalta Timberland",link:"586546"},
+  {name:"Kula-Ya-Ku",genus:"Bird Wyvern",element:"Non-Elem",rank:"2★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:4,atk:4,spd:4,def:4},egg:"Canalta Timberland",link:"586712"},
+  {name:"Lagiacrus",genus:"Leviathan",element:"Thunder",rank:"5★",attackType:"Power",tier:"A",
+   patterns:{Normal:"P","Electric Charge":"S","Fully Charged":"T"},
+   weakElem:{fire:2,water:1,thunder:0,ice:2,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:7,atk:7,spd:5,def:7},egg:"Azuria - Defeat Invasive Plesioth",link:"586310"},
+  {name:"Legiana",genus:"Flying Wyvern",element:"Ice",rank:"4★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S",Enraged:"P",Airborne:"T"},
+   weakElem:{fire:3,water:0,thunder:2,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:7,def:6},egg:"Serathis",link:"587102"},
+  {name:"Lunagaron",genus:"Fanged Wyvern",element:"Ice",rank:"5★",attackType:"Speed",tier:"S",
+   patterns:{Normal:"S","Ice Mantle":"P"},
+   weakElem:{fire:3,water:0,thunder:2,ice:0,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:8,def:6},egg:"Serathis - Frozen Grotto, Glacial Caps",link:"587111"},
+  {name:"Magnamalo",genus:"Fanged Wyvern",element:"Non-Elem",rank:"6★",attackType:"Speed",tier:"SS",
+   patterns:{Normal:"S","Hellfireblight Mantle":"P","Hellfireblight Critical":"T"},
+   weakElem:{fire:1,water:3,thunder:1,ice:1,dragon:2},ailments:{poison:1,para:1,sleep:1,blast:0,stun:2,bleed:1},
+   stats:{hp:7,atk:8,spd:7,def:7},egg:"Serathis - Old Capital Road",link:"586563"},
+  {name:"Malzeno",genus:"Elder Dragon",element:"Dragon",rank:"7★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S","Blood Rite Active":"T",Exposed:"S"},
+   weakElem:{fire:2,water:1,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:0,blast:1,stun:1,bleed:0},
+   stats:{hp:8,atk:8,spd:7,def:7},egg:"Serathis - Defeat Malzeno",link:"587471"},
+  {name:"Mizutsune",genus:"Leviathan",element:"Water",rank:"5★",attackType:"Technical",tier:"B",
+   patterns:{Normal:"T","Bubble Mantle":"S","Bubble Mantle (Slippery)":"S"},
+   weakElem:{fire:2,water:0,thunder:3,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:6,def:7},egg:"Canalta Timberland - Defeat Invasive Shogun Ceanataur",link:"586535"},
+  {name:"Namielle",genus:"Elder Dragon",element:"Water",rank:"7★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Abyssal Charge":"S","Water Depleted":"P"},
+   weakElem:{fire:3,water:0,thunder:1,ice:1,dragon:2},ailments:{poison:1,para:1,sleep:0,blast:1,stun:1,bleed:0},
+   stats:{hp:8,atk:8,spd:6,def:8},egg:"Azuria - Defeat Namielle",link:"587517"},
+  {name:"Nargacuga",genus:"Flying Wyvern",element:"Non-Elem",rank:"4★",attackType:"Speed",tier:"A",
+   patterns:{Normal:"S",Camouflaged:"T"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:5,atk:6,spd:9,def:4},egg:"Canalta Timberland - Defeat Invasive Nerscylla",link:"586549"},
+  {name:"Nerscylla",genus:"Temnoceran",element:"Non-Elem",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","No Web":"S"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:0,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:5,spd:5,def:5},egg:"Azuria",link:"586323"},
+  {name:"Odogaron",genus:"Fanged Wyvern",element:"Non-Elem",rank:"5★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"S",Frenzied:"P"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:1},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:5,atk:7,spd:8,def:4},egg:"Tarkuan - Death's Maw",link:"587112"},
+  {name:"Paolumu",genus:"Flying Wyvern",element:"Non-Elem",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:2,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:5,atk:4,spd:5,def:5},egg:"Azuria",link:"586324"},
+  {name:"Pink Rathian",genus:"Flying Wyvern",element:"Fire",rank:"5★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:0,water:2,thunder:2,ice:1,dragon:2},ailments:{poison:0,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:5,def:6},egg:"Azuria - Rathian Rank B Habitat Restoration",link:"586312"},
+  {name:"Plesioth",genus:"Piscine Wyvern",element:"Water",rank:"4★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:2,water:0,thunder:3,ice:1,dragon:0},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:4,def:6},egg:"Azuria",link:"586316"},
+  {name:"Pukei-Pukei",genus:"Bird Wyvern",element:"Water",rank:"3★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Poison Active (Munch)":"S","Poison Active (Crunch)":"P"},
+   weakElem:{fire:2,water:0,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:5,spd:5,def:5},egg:"Canalta Timberland",link:"586545"},
+  {name:"Purple Gypceros",genus:"Bird Wyvern",element:"Non-Elem",rank:"3★",attackType:"Power",tier:"S",
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:2,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:5,atk:5,spd:5,def:5},egg:"Azuria",link:"586319"},
+  {name:"Purple Ludroth",genus:"Leviathan",element:"Non-Elem",rank:"3★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:5,spd:5,def:5},egg:"Canalta Timberland",link:"586453"},
+  {name:"Rakna-Kadaki",genus:"Temnoceran",element:"Fire",rank:"5★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Web Mantle":"T","No Web":"S"},
+   weakElem:{fire:0,water:3,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:0},
+   stats:{hp:7,atk:7,spd:4,def:6},egg:"Tarkuan",link:"587106"},
+  {name:"Rathalos",genus:"Flying Wyvern",element:"Fire",rank:"5★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T","Enraged (Airborne)":"S"},
+   weakElem:{fire:0,water:2,thunder:1,ice:1,dragon:3},ailments:{poison:1,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:7,spd:6,def:5},egg:"Serathis",link:"587108"},
+  {name:"Rathian",genus:"Flying Wyvern",element:"Fire",rank:"4★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:0,water:2,thunder:2,ice:1,dragon:2},ailments:{poison:0,para:2,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:5,def:5},egg:"Azuria",link:"586313"},
+  {name:"Red Khezu",genus:"Flying Wyvern",element:"Thunder",rank:"4★",attackType:"Technical",tier:"S",
+   patterns:{Normal:"T","Electric Charge":"P"},
+   weakElem:{fire:3,water:1,thunder:0,ice:1,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:4,def:7},egg:"Canalta Timberland",link:"586544"},
+  {name:"Rey Dau",genus:"Flying Wyvern",element:"Thunder",rank:"6★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S","Electric Charge":"S","Thunder Supercharge":"P"},
+   weakElem:{fire:1,water:2,thunder:0,ice:2,dragon:2},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:7,atk:8,spd:8,def:5},egg:"Tarkuan - Defeat Rey Dau",link:"587470"},
+  {name:"Royal Ludroth",genus:"Leviathan",element:"Water",rank:"2★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Enraged:"T"},
+   weakElem:{fire:3,water:0,thunder:2,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:4,spd:5,def:5},egg:"Azuria",link:"586317"},
+  {name:"Sand Barioth",genus:"Flying Wyvern",element:"Non-Elem",rank:"5★",attackType:"Technical",tier:"B",
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:0,water:2,thunder:2,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:7,def:6},egg:"Habitat Restoration - Barioth Rank S",link:"586605"},
+  {name:"Seregios",genus:"Flying Wyvern",element:"Non-Elem",rank:"6★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S","Enraged (Airborne)":"P",Airborne:"T"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:6,atk:7,spd:7,def:7},egg:"Canalta Timberland - Mt. Canalta",link:"586550"},
+  {name:"Shogun Ceanataur",genus:"Carapaceon",element:"Water",rank:"3★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S","Shell (Skull)":"T","No Shell":"P"},
+   weakElem:{fire:2,water:0,thunder:3,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:0},
+   stats:{hp:5,atk:6,spd:5,def:7},egg:"Tarkuan",link:"587114"},
+  {name:"Shrouded Nerscylla",genus:"Temnoceran",element:"Non-Elem",rank:"4★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","No Web":"S"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:0,sleep:0,blast:1,stun:1,bleed:1},
+   stats:{hp:5,atk:6,spd:5,def:5},egg:"Tarkuan",link:"587098"},
+  {name:"Silverwind Nargacuga",genus:"Flying Wyvern",element:"Non-Elem",rank:"7★",attackType:"Speed",tier:"S",
+   patterns:{Normal:"S"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:6,atk:7,spd:9,def:5},egg:"Canalta Timberland - Nargacuga Rank S w/ 3 Wind Monsters",link:"586542"},
+  {name:"Somnacanth",genus:"Leviathan",element:"Water",rank:"4★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Sleep:"S",Enraged:"S"},
+   weakElem:{fire:2,water:0,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:0,blast:1,stun:2,bleed:1},
+   stats:{hp:5,atk:5,spd:5,def:6},egg:"Canalta Timberland",link:"586457"},
+  {name:"Soulseer Mizutsune",genus:"Leviathan",element:"Water",rank:"7★",attackType:"Speed",tier:"A",
+   patterns:{Normal:"S"},
+   weakElem:{fire:2,water:0,thunder:3,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:7,atk:7,spd:6,def:7},egg:"Habitat Restoration - Rank S w/ Zinogre",link:"586606"},
+  {name:"Stygian Zinogre",genus:"Fanged Wyvern",element:"Dragon",rank:"6★",attackType:"Technical",tier:"A",
+   patterns:{Normal:"T","Blightstone Protection":"S","Blightstone Unleashed":"P"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:6,atk:8,spd:7,def:5},egg:"Habitat Restoration - Zinogre Rank A",link:"586607"},
+  {name:"Tetranadon",genus:"Amphibian",element:"Water",rank:"3★",attackType:"Power",tier:null,
+   patterns:{Normal:"P",Stuffed:"T"},
+   weakElem:{fire:2,water:0,thunder:2,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:6,atk:5,spd:3,def:6},egg:"Canalta Timberland",link:"586455"},
+  {name:"Thunder Serpent Narwa",genus:"Elder Dragon",element:"Thunder",rank:"7★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S"},
+   weakElem:{fire:2,water:1,thunder:0,ice:2,dragon:2},ailments:{poison:1,para:0,sleep:1,blast:1,stun:0,bleed:1},
+   stats:{hp:9,atk:8,spd:5,def:8},egg:null,link:"587513"},
+  {name:"Thunderlord Zinogre",genus:"Fanged Wyvern",element:"Thunder",rank:"7★",attackType:"Power",tier:"S",
+   patterns:{Normal:"P"},
+   weakElem:{fire:1,water:2,thunder:0,ice:3,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:7,atk:8,spd:7,def:6},egg:"Habitat Restoration - Rank S w/ Mizutsune",link:"586796"},
+  {name:"Tigrex",genus:"Flying Wyvern",element:"Non-Elem",rank:"5★",attackType:"Power",tier:"B",
+   patterns:{Normal:"P",Enraged:"S"},
+   weakElem:{fire:1,water:2,thunder:1,ice:2,dragon:1},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:7,atk:7,spd:7,def:5},egg:"Repel Invasive Diablos",link:"586559"},
+  {name:"Tobi-Kadachi",genus:"Fanged Wyvern",element:"Thunder",rank:"3★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S","Electric Charge":"T"},
+   weakElem:{fire:2,water:2,thunder:0,ice:1,dragon:0},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:5,atk:5,spd:7,def:4},egg:"Azuria",link:"586318"},
+  {name:"Velkhana",genus:"Elder Dragon",element:"Ice",rank:"7★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Ice Mantle":"S",Enraged:"T"},
+   weakElem:{fire:3,water:0,thunder:1,ice:0,dragon:2},ailments:{poison:1,para:1,sleep:0,blast:2,stun:1,bleed:0},
+   stats:{hp:8,atk:8,spd:7,def:8},egg:"Serathis - Defeat Velkhana",link:"587515"},
+  {name:"Velocidrome",genus:"Bird Wyvern",element:"Non-Elem",rank:"1★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S",Enraged:"P"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:0},ailments:{poison:2,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:4,atk:4,spd:6,def:3},egg:"Azuria",link:"586321"},
+  {name:"Wind Serpent Ibushi",genus:"Elder Dragon",element:"Dragon",rank:"7★",attackType:"Power",tier:null,
+   patterns:{Normal:"P"},
+   weakElem:{fire:1,water:2,thunder:2,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:0,blast:1,stun:1,bleed:0},
+   stats:{hp:9,atk:8,spd:6,def:7},egg:null,link:"587514"},
+  {name:"Yama Tsukami",genus:"Elder Dragon",element:"Dragon",rank:"7★",attackType:"Power",tier:null,
+   patterns:{Normal:"P","Open Mouth":"S"},
+   weakElem:{fire:2,water:1,thunder:2,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:0,blast:1,stun:1,bleed:0},
+   stats:{hp:9,atk:7,spd:3,def:9},egg:null,link:"587518"},
+  {name:"Yian Garuga",genus:"Bird Wyvern",element:"Fire",rank:"4★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"P"},
+   weakElem:{fire:0,water:2,thunder:2,ice:2,dragon:1},ailments:{poison:0,para:1,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:5,atk:6,spd:7,def:5},egg:"Canalta Timberland",link:"586543"},
+  {name:"Yian Kut-Ku",genus:"Bird Wyvern",element:"Fire",rank:"2★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T",Enraged:"S"},
+   weakElem:{fire:0,water:2,thunder:2,ice:1,dragon:1},ailments:{poison:1,para:1,sleep:2,blast:1,stun:1,bleed:1},
+   stats:{hp:4,atk:5,spd:5,def:4},egg:"Azuria",link:"586325"},
+  {name:"Zinogre",genus:"Fanged Wyvern",element:"Thunder",rank:"5★",attackType:"Speed",tier:"B",
+   patterns:{Normal:"S","Electric Charge":"T",Electrify:"P"},
+   weakElem:{fire:1,water:2,thunder:0,ice:3,dragon:1},ailments:{poison:1,para:0,sleep:1,blast:1,stun:1,bleed:2},
+   stats:{hp:6,atk:7,spd:7,def:5},egg:"Repel Invasive Odogaron",link:"586564"},
+  {name:"Nibelsnarf",genus:"Leviathan",element:"Non-Elem",rank:"4★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T","Open Mouth":"S"},
+   weakElem:{fire:1,water:1,thunder:2,ice:2,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:2,stun:1,bleed:1},
+   stats:{hp:6,atk:6,spd:4,def:6},egg:"Tarkuan",link:"586540"},
+  {name:"Bnahabra",genus:"Bird Wyvern",element:"Non-Elem",rank:"1★",attackType:"Technical",tier:null,
+   patterns:{Normal:"T"},
+   weakElem:{fire:2,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:0,para:1,sleep:1,blast:1,stun:2,bleed:1},
+   stats:{hp:2,atk:3,spd:5,def:2},egg:null,link:"586653"},
+  {name:"Gargwa",genus:"Bird Wyvern",element:"Non-Elem",rank:"1★",attackType:"Speed",tier:null,
+   patterns:{Normal:"S"},
+   weakElem:{fire:1,water:1,thunder:1,ice:1,dragon:0},ailments:{poison:1,para:1,sleep:1,blast:1,stun:1,bleed:1},
+   stats:{hp:3,atk:2,spd:4,def:3},egg:null,link:"586697"}
+];
+
+const ELEM_LABELS = ["Fire","Water","Thunder","Ice","Dragon"];
+const ELEM_KEYS = ["fire","water","thunder","ice","dragon"];
+const ELEM_CLASSES = ["fire","water","thunder","ice","dragon"];
+const AIL_LABELS = ["Poison","Paralysis","Sleep","Blast","Stun","Bleed"];
+const AIL_KEYS = ["poison","para","sleep","blast","stun","bleed"];
+const WK_CLASSES = ["wk-immune","wk-resist","wk-neutral","wk-weak","wk-veryweak"];
+const WK_TEXT = ["Immune","Resist","Normal","Weak","V.Weak"];
+
+function elemClass(el){
+  const map={Fire:"fire",Water:"water",Thunder:"thunder",Ice:"ice",Dragon:"dragon","Non-Elem":"none"};
+  return map[el]||"none";
+}
+
+function renderCard(m){
+  const tierHTML = m.tier ? `<span class="tier-badge tier-${m.tier.toLowerCase()}">${m.tier}</span>` : '';
+  let weakHTML = '';
+  ELEM_KEYS.forEach((k,i)=>{
+    const v = m.weakElem[k];
+    weakHTML += `<div class="weakness-cell ${WK_CLASSES[v]}"><span class="elem-name">${ELEM_LABELS[i]}</span>${WK_TEXT[v]}</div>`;
+  });
+  let ailHTML = '';
+  AIL_KEYS.forEach((k,i)=>{
+    const v = m.ailments[k];
+    ailHTML += `<div class="ailment-cell ${WK_CLASSES[v]}"><span class="ail-name">${AIL_LABELS[i]}</span>${WK_TEXT[v]}</div>`;
+  });
+  let patternHTML = '';
+  if(m.patterns){
+    const PAT_FULL = {P:'Power',S:'Speed',T:'Technical'};
+    const COUNTER = {P:'S',S:'T',T:'P'};
+    const COUNTER_LABEL = {P:'Speed',S:'Technical',T:'Power'};
+    let rows = '';
+    Object.entries(m.patterns).forEach(([state,type])=>{
+      const c = COUNTER[type];
+      rows += `<tr><td class="pt-state">${state}</td><td class="pt-uses pt-${type}">${PAT_FULL[type]}</td><td class="pt-counter pt-counter-${c}">Use ${COUNTER_LABEL[type]}</td></tr>`;
+    });
+    patternHTML = `<div class="pattern-section"><table class="pattern-table"><tr><td class="pt-header">Estado</td><td class="pt-header" style="text-align:center">Monstro usa</td><td class="pt-header" style="text-align:center">Voce usa</td></tr>${rows}</table></div>`;
+  }
+  const statNames = [{k:'hp',l:'HP'},{k:'atk',l:'ATK'},{k:'spd',l:'SPD'},{k:'def',l:'DEF'}];
+  const statClasses = ['stat-hp','stat-atk','stat-spd','stat-def'];
+  let statsHTML = '';
+  statNames.forEach((s,i)=>{
+    const v = m.stats[s.k];
+    const pct = (v/10)*100;
+    statsHTML += `<div class="stat-bar-container ${statClasses[i]}"><span class="stat-label">${s.l}</span><div class="stat-bar-bg"><div class="stat-bar" style="width:${pct}%"></div></div><span class="stat-val">${v}</span></div>`;
+  });
+  const eggHTML = m.egg ? `<span class="egg-location">${m.egg}</span>` : `<span class="egg-location">N/A</span>`;
+  const linkHTML = m.link ? `<a class="game8-link" href="https://game8.co/games/Monster-Hunter-Stories-3/archives/${m.link}" target="_blank">Game8 Wiki &rarr;</a>` : '';
+
+  return `<div class="monster-card">
+    <div class="card-header">
+      <h3>${m.name} <span class="monster-rank">${m.rank}</span> ${tierHTML}</h3>
+    </div>
+    <div class="card-body">
+      <div class="info-row">
+        <span class="info-tag">${m.genus}</span>
+        <span class="info-tag elem-tag elem-${elemClass(m.element)}">${m.element}</span>
+        <span class="info-tag">${m.attackType}</span>
+      </div>
+      <div class="section-label">Padroes de Ataque (Head-to-Head)</div>
+      ${patternHTML}
+      <div class="section-label">Fraquezas Elementais</div>
+      <div class="weakness-grid">${weakHTML}</div>
+      <div class="section-label">Resistencia a Ailments</div>
+      <div class="ailment-grid">${ailHTML}</div>
+      <div class="section-label">Tendencia de Stats</div>
+      ${statsHTML}
+    </div>
+    <div class="card-footer">${eggHTML}${linkHTML}</div>
+  </div>`;
+}
+
+function filterAndRender(){
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const elemF = document.getElementById('filterElement').value;
+  const genusF = document.getElementById('filterGenus').value;
+  const tierF = document.getElementById('filterTier').value;
+  const filtered = MONSTERS.filter(m=>{
+    if(q && !m.name.toLowerCase().includes(q)) return false;
+    if(elemF && m.element !== elemF) return false;
+    if(genusF && m.genus !== genusF) return false;
+    if(tierF && m.tier !== tierF) return false;
+    return true;
+  });
+  const grid = document.getElementById('monsterGrid');
+  const noRes = document.getElementById('noResults');
+  const count = document.getElementById('resultCount');
+  if(filtered.length === 0){
+    grid.innerHTML = '';
+    noRes.style.display = 'block';
+    count.textContent = '0 monstros encontrados';
+  } else {
+    noRes.style.display = 'none';
+    grid.innerHTML = filtered.map(renderCard).join('');
+    count.textContent = `${filtered.length} monstro${filtered.length>1?'s':''} encontrado${filtered.length>1?'s':''}`;
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', filterAndRender);
+document.getElementById('filterElement').addEventListener('change', filterAndRender);
+document.getElementById('filterGenus').addEventListener('change', filterAndRender);
+document.getElementById('filterTier').addEventListener('change', filterAndRender);
+
+filterAndRender();
+</script>
+</body>
+</html>

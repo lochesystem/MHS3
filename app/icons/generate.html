@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head><title>Gerar Icones PWA</title></head>
+<body style="background:#222;color:#fff;font-family:sans-serif;padding:2rem">
+<h1>Gerador de Icones PWA - MHS3</h1>
+<p>Clique em cada botao para baixar o icone correspondente.</p>
+<div id="previews" style="display:flex;gap:1rem;flex-wrap:wrap;margin:2rem 0"></div>
+<script>
+const sizes = [
+  { name: 'icon-192', size: 192, maskable: false },
+  { name: 'icon-512', size: 512, maskable: false },
+  { name: 'icon-maskable-192', size: 192, maskable: true },
+  { name: 'icon-maskable-512', size: 512, maskable: true }
+];
+
+function drawIcon(ctx, size, maskable) {
+  const s = size;
+  const r = s * 0.125;
+
+  ctx.fillStyle = '#0d1117';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, s, s, maskable ? 0 : r);
+  ctx.fill();
+
+  if (!maskable) {
+    ctx.strokeStyle = '#1f6feb';
+    ctx.lineWidth = s * 0.008;
+    ctx.beginPath();
+    ctx.roundRect(s*0.047, s*0.047, s*0.906, s*0.906, r*0.75);
+    ctx.stroke();
+  }
+
+  const cx = s / 2;
+  const cy = s * 0.47;
+  const scale = s / 512;
+
+  ctx.globalAlpha = 0.9;
+
+  // Power (red)
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.moveTo(cx - 90*scale, cy - 80*scale);
+  ctx.lineTo(cx - 30*scale, cy - 80*scale);
+  ctx.lineTo(cx - 60*scale, cy - 30*scale);
+  ctx.fill();
+
+  // Speed (blue)
+  ctx.fillStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.moveTo(cx + 30*scale, cy - 80*scale);
+  ctx.lineTo(cx + 90*scale, cy - 80*scale);
+  ctx.lineTo(cx + 60*scale, cy - 30*scale);
+  ctx.fill();
+
+  // Technical (green)
+  ctx.fillStyle = '#22c55e';
+  ctx.beginPath();
+  ctx.moveTo(cx - 30*scale, cy);
+  ctx.lineTo(cx + 30*scale, cy);
+  ctx.lineTo(cx, cy + 50*scale);
+  ctx.fill();
+
+  // Center diamond
+  ctx.globalAlpha = 0.95;
+  ctx.fillStyle = '#e6edf3';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - 50*scale);
+  ctx.lineTo(cx + 30*scale, cy - 20*scale);
+  ctx.lineTo(cx, cy + 10*scale);
+  ctx.lineTo(cx - 30*scale, cy - 20*scale);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
+
+  // Text MHS3
+  ctx.fillStyle = '#e6edf3';
+  ctx.font = `700 ${72*scale}px "Segoe UI", system-ui, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('MHS3', cx, s * 0.74);
+
+  // Text GUIA
+  ctx.fillStyle = '#8b949e';
+  ctx.font = `400 ${28*scale}px "Segoe UI", system-ui, sans-serif`;
+  ctx.fillText('GUIA', cx, s * 0.82);
+}
+
+const container = document.getElementById('previews');
+
+sizes.forEach(({ name, size, maskable }) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  drawIcon(ctx, size, maskable);
+
+  const wrapper = document.createElement('div');
+  wrapper.style.textAlign = 'center';
+
+  const preview = document.createElement('canvas');
+  preview.width = 128;
+  preview.height = 128;
+  preview.style.border = '1px solid #444';
+  preview.style.borderRadius = '12px';
+  preview.getContext('2d').drawImage(canvas, 0, 0, 128, 128);
+
+  const btn = document.createElement('button');
+  btn.textContent = `${name}.png (${size}x${size})`;
+  btn.style.cssText = 'display:block;margin:.5rem auto;padding:.5rem 1rem;cursor:pointer;background:#1f6feb;color:#fff;border:none;border-radius:6px';
+  btn.onclick = () => {
+    const a = document.createElement('a');
+    a.download = name + '.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  };
+
+  wrapper.appendChild(preview);
+  wrapper.appendChild(btn);
+  container.appendChild(wrapper);
+});
+</script>
+</body>
+</html>
