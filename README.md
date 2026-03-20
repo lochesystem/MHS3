@@ -2,6 +2,8 @@
 
 Guia interativo de consulta de fraquezas e padroes de ataque (Head-to-Head) dos monstros de **Monster Hunter Stories 3: Twisted Reflection** (MHS3).
 
+**Acesse online:** https://lochesystem.github.io/MHS3/
+
 ## Sobre o Jogo
 
 | Info | Detalhe |
@@ -182,12 +184,15 @@ Pressione `Ctrl+C` no terminal onde o `npx serve` esta rodando.
 
 ## Como Instalar no Celular (PWA) - Outras Opcoes
 
-### GitHub Pages (acesso de qualquer lugar, sem servidor local)
+### GitHub Pages (ja configurado)
 
-1. Crie um repositorio no GitHub e suba os arquivos
-2. Em Settings > Pages, selecione a branch e a pasta `/app` como source
-3. Acesse `https://seu-usuario.github.io/MHS3/` no celular
-4. Toque nos 3 pontos do Chrome > **Instalar aplicativo**
+O app esta publicado em: **https://lochesystem.github.io/MHS3/**
+
+1. Acesse a URL acima no Chrome do celular
+2. O banner **"Instalar o MHS3 Guia"** aparecera automaticamente (HTTPS)
+3. Toque em **Instalar** — o app fica na home screen e funciona offline
+
+Qualquer push na branch `master` faz deploy automatico via GitHub Actions.
 
 ### Arquivo unico (sem instalacao, sem servidor)
 
