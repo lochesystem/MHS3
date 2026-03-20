@@ -120,45 +120,74 @@ Os dados foram compilados e cruzados a partir de multiplas fontes:
 - **Elder Dragons**: Dragoes ancioes extremamente poderosos (Namielle, Velkhana, Malzeno, etc.)
 - **Deviant Monsters**: Variantes obtidas via Habitat Restoration rank S (Dreadking, Silverwind, etc.)
 
-## Pre-requisitos
+## Ambiente de Desenvolvimento
 
-| Ferramenta | Versao Testada | Como Instalar |
-|------------|---------------|---------------|
+### Pre-requisitos
+
+| Ferramenta | Versao Testada | Como Instalar (Windows) |
+|------------|---------------|------------------------|
 | **Node.js** | v24.14.0 LTS | `winget install OpenJS.NodeJS.LTS` |
 | **npm** | 11.9.0 | Vem junto com o Node.js |
+| **Git** | 2.53.0 | `winget install Git.Git` |
+| **GitHub CLI** | 2.88.1 | `winget install GitHub.cli` |
 | **serve** | 14.2.6 | Instalado automaticamente via `npx` |
 
-> Apos instalar o Node.js, feche e reabra o terminal para que o PATH seja atualizado.
+### Instalacao completa do zero (Windows)
 
-## Como Rodar o Servidor Local
+Se voce esta configurando do zero em uma maquina nova:
 
-### Passo a passo
+```powershell
+# 1. Instalar ferramentas via winget
+winget install OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+winget install Git.Git --accept-package-agreements --accept-source-agreements
+winget install GitHub.cli --accept-package-agreements --accept-source-agreements
 
-1. Abra um terminal (PowerShell, CMD ou terminal do Cursor) na pasta do projeto:
+# 2. Fechar e reabrir o terminal (para atualizar o PATH)
 
-   ```
-   cd C:\Users\adria\OneDrive\Documentos\Cursor\MHS3
-   ```
+# 3. Verificar instalacao
+node --version    # deve exibir v24.x.x
+npm --version     # deve exibir 11.x.x
+git --version     # deve exibir git version 2.x.x
+gh --version      # deve exibir gh version 2.x.x
 
-2. Inicie o servidor apontando para a pasta `app`:
+# 4. Autenticar no GitHub (abre o navegador)
+gh auth login --web --git-protocol https
 
-   ```
-   npx serve app
-   ```
+# 5. Configurar identidade do Git (substitua pelo seu usuario)
+git config --global user.name "seu-usuario"
+git config --global user.email "seu-id+seu-usuario@users.noreply.github.com"
+```
 
-3. O terminal ira exibir:
+> **Nota:** Apos instalar qualquer ferramenta via winget, feche e reabra o terminal para que o PATH seja atualizado. Ou execute manualmente:
+> ```powershell
+> $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+> ```
 
-   ```
-   INFO  Accepting connections at http://localhost:3000
-   ```
+## Como Rodar Localmente
 
-4. Abra no navegador: **http://localhost:3000**
+### Opcao 1: npx serve (rapido)
+
+```powershell
+cd C:\Users\adria\OneDrive\Documentos\Cursor\MHS3
+npx serve app
+```
+
+Acesse **http://localhost:3000** no navegador.
+
+### Opcao 2: server.js (sem dependencias externas)
+
+```powershell
+cd C:\Users\adria\OneDrive\Documentos\Cursor\MHS3
+node server.js
+```
+
+Exibe automaticamente o IP local para acesso pelo celular.
 
 ### Acessar pelo celular (mesma rede Wi-Fi)
 
 1. Com o servidor rodando no PC, descubra seu IP local:
 
-   ```
+   ```powershell
    ipconfig
    ```
 
@@ -166,41 +195,102 @@ Os dados foram compilados e cruzados a partir de multiplas fontes:
 
 2. No celular, conecte na mesma rede Wi-Fi do PC
 
-3. Abra o Chrome no celular e acesse:
+3. Abra o Chrome no celular e acesse `http://SEU-IP:3000`
 
-   ```
-   http://10.0.0.151:3000
-   ```
+4. Para instalar como app: toque nos **3 pontinhos** do Chrome > **"Instalar aplicativo"** ou **"Adicionar a tela inicial"**
 
-   (substitua pelo seu IP)
-
-4. O Chrome ira exibir o banner **"Instalar o MHS3 Guia no seu dispositivo?"** - toque em **Instalar**
-
-5. O app aparecera na home screen do celular com o icone MHS3 e funcionara offline
+> **Nota:** O banner automatico de instalacao so aparece em HTTPS. Em rede local HTTP, use o menu do Chrome.
 
 ### Parar o servidor
 
-Pressione `Ctrl+C` no terminal onde o `npx serve` esta rodando.
+Pressione `Ctrl+C` no terminal.
 
-## Como Instalar no Celular (PWA) - Outras Opcoes
+## GitHub Pages (Deploy)
 
-### GitHub Pages (ja configurado)
+### URL publica
 
 O app esta publicado em: **https://lochesystem.github.io/MHS3/**
 
-1. Acesse a URL acima no Chrome do celular
-2. O banner **"Instalar o MHS3 Guia"** aparecera automaticamente (HTTPS)
-3. Toque em **Instalar** — o app fica na home screen e funciona offline
+O deploy e automatico via GitHub Actions. Qualquer push na branch `master` publica a pasta `app/` no Pages.
 
-Qualquer push na branch `master` faz deploy automatico via GitHub Actions.
+### Como funciona o deploy
+
+O arquivo `.github/workflows/deploy.yml` faz:
+1. Checkout do repositorio
+2. Upload da pasta `app/` como artefato do Pages
+3. Deploy no GitHub Pages
+
+### Instalar como app via GitHub Pages
+
+1. Acesse **https://lochesystem.github.io/MHS3/** no Chrome do celular
+2. O banner **"Instalar o MHS3 Guia"** aparece automaticamente (HTTPS ativo)
+3. Toque em **Instalar** — o app fica na home screen e funciona offline
+4. Se o banner nao aparecer, toque nos **3 pontinhos** > **"Instalar aplicativo"**
+
+### Publicar alteracoes
+
+Apos editar qualquer arquivo:
+
+```powershell
+git add .
+git commit -m "descricao da alteracao"
+git push
+```
+
+O deploy leva ~20 segundos e e visivel em: https://github.com/lochesystem/MHS3/actions
+
+### Configurar GitHub Pages em outro repositorio
+
+Se quiser replicar este setup em outro repo:
+
+```powershell
+# 1. Inicializar git
+git init
+git add .
+git commit -m "primeiro commit"
+
+# 2. Criar repo no GitHub e push
+gh repo create NOME-DO-REPO --public --source=. --push --description "Descricao"
+
+# 3. Ativar Pages com GitHub Actions
+gh api repos/SEU-USUARIO/NOME-DO-REPO/pages -X POST -f build_type=workflow
+
+# 4. Criar o workflow (copie .github/workflows/deploy.yml deste projeto)
+#    Altere o campo "path: app" para a pasta que contem seu index.html
+
+# 5. Push do workflow
+git add .
+git commit -m "ci: add GitHub Pages deploy"
+git push
+```
+
+## Outras Formas de Distribuir
 
 ### Arquivo unico (sem instalacao, sem servidor)
 
 1. Envie o `index.html` (da raiz) via WhatsApp, Drive ou cabo USB
-2. Abra no Chrome do celular - funciona direto, sem servidor
-3. Nao tera funcionalidade PWA/offline, mas todo o conteudo esta no arquivo
+2. Abra no Chrome do celular — funciona direto, sem servidor
+3. Nao tera PWA/offline, mas todo o conteudo esta no arquivo
+
+### Hospedar em outros servicos (alternativas ao Pages)
+
+| Servico | Comando/Metodo | URL resultante |
+|---------|---------------|----------------|
+| **Vercel** | `npx vercel app` | `https://mhs3.vercel.app` |
+| **Netlify** | `npx netlify deploy --dir=app --prod` | `https://mhs3.netlify.app` |
+| **Surge** | `npx surge app mhs3.surge.sh` | `http://mhs3.surge.sh` |
+
+Todos suportam HTTPS e o banner de instalacao PWA funciona automaticamente.
 
 ## Links Uteis
+
+### Projeto
+
+- [App Online (GitHub Pages)](https://lochesystem.github.io/MHS3/)
+- [Repositorio GitHub](https://github.com/lochesystem/MHS3)
+- [Status do Deploy](https://github.com/lochesystem/MHS3/actions)
+
+### Fontes de Dados
 
 - [Game8 Wiki - MHS3](https://game8.co/games/Monster-Hunter-Stories-3)
 - [Todas as Fraquezas e Tipos de Ataque (Game8)](https://game8.co/games/Monster-Hunter-Stories-3/archives/585975)
@@ -209,6 +299,10 @@ Qualquer push na branch `master` faz deploy automatico via GitHub Actions.
 - [Mapa Interativo (Game8)](https://game8.co/games/Monster-Hunter-Stories-3/archives/584831)
 - [Padroes de Ataque - GamerGuides](https://www.gamerguides.com/monster-hunter-stories-3-twisted-reflection/guide/getting-started/gameplay/all-monster-attack-types-power-technique-or-speed)
 - [Guia de Fraquezas - NeonLightsMedia](https://www.neonlightsmedia.com/blog/mhs3-monster-weakness-locations)
+
+### Documentacao Tecnica
+
+- [DOCS.md](DOCS.md) — Documentacao completa do codigo (arquitetura, modelo de dados, CSS, JS, PWA, service worker)
 
 ## Creditos
 
