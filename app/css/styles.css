@@ -22,11 +22,6 @@
   --speed: #3b82f6;
   --technical: #22c55e;
 
-  --ss: #fbbf24;
-  --s: #a78bfa;
-  --a: #58a6ff;
-  --b: #94a3b8;
-
   --radius: 12px;
   --radius-sm: 8px;
   --radius-xs: 6px;
@@ -238,21 +233,6 @@ a:hover { text-decoration: underline }
   flex-shrink: 0;
 }
 
-.card__tier {
-  font-size: .68rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 99px;
-  color: #000;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.card__tier--ss { background: var(--ss) }
-.card__tier--s  { background: var(--s); color: #fff }
-.card__tier--a  { background: var(--a); color: #fff }
-.card__tier--b  { background: var(--b) }
-
 /* Card Body */
 .card__body {
   padding: 1rem;
@@ -396,49 +376,6 @@ a:hover { text-decoration: underline }
   font-size: .58rem;
   opacity: .8;
   margin-bottom: 1px;
-}
-
-/* ===== Stat Bars ===== */
-.stat {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin-bottom: .3rem;
-  font-size: .78rem;
-}
-
-.stat__label {
-  width: 36px;
-  text-align: right;
-  color: var(--text2);
-  font-size: .72rem;
-  flex-shrink: 0;
-}
-
-.stat__bar-bg {
-  flex: 1;
-  height: 8px;
-  background: var(--surface2);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.stat__bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width .4s ease;
-}
-
-.stat--hp  .stat__bar { background: linear-gradient(90deg, #22c55e, #4ade80) }
-.stat--atk .stat__bar { background: linear-gradient(90deg, #ef4444, #f87171) }
-.stat--spd .stat__bar { background: linear-gradient(90deg, #3b82f6, #60a5fa) }
-.stat--def .stat__bar { background: linear-gradient(90deg, #f59e0b, #fbbf24) }
-
-.stat__val {
-  width: 20px;
-  font-weight: 600;
-  font-size: .75rem;
-  flex-shrink: 0;
 }
 
 /* ===== Card Footer ===== */
@@ -692,9 +629,6 @@ a:hover { text-decoration: underline }
 
   .weakness-cell { font-size: .65rem; padding: 3px 1px }
   .weakness-cell__name { font-size: .48rem }
-
-  .stat__label { width: 30px; font-size: .68rem }
-  .stat__val   { font-size: .7rem }
 
   .pt-state { font-size: .68rem }
   .pt-uses  { font-size: .68rem }

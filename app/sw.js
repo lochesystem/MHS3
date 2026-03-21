@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mhs3-guia-v1';
+const CACHE_NAME = 'mhs3-guia-v2';
 
 const ASSETS = [
   './',
