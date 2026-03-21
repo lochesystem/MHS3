@@ -67,8 +67,10 @@ select:focus{border-color:var(--accent)}
 .ailment-cell .ail-name{display:block;font-size:.6rem;opacity:.8;margin-bottom:1px}
 
 .card-footer{padding:.6rem 1.2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.8rem}
-.egg-location{color:var(--text2);font-size:.78rem}
-.game8-link{color:var(--accent);font-weight:500;font-size:.78rem}
+.egg-info{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.egg-img{width:40px;height:50px;object-fit:contain;flex-shrink:0;border-radius:6px;background:var(--bg)}
+.egg-location{color:var(--text2);font-size:.78rem;word-break:break-word}
+.game8-link{color:var(--accent);font-weight:500;font-size:.78rem;white-space:nowrap;flex-shrink:0}
 
 .no-results{text-align:center;padding:3rem;color:var(--text2)}
 .no-results h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--text)}
@@ -488,10 +490,11 @@ function renderCard(m){
     });
     patternHTML = `<div class="pattern-section"><table class="pattern-table"><tr><td class="pt-header">Estado</td><td class="pt-header" style="text-align:center">Monstro usa</td><td class="pt-header" style="text-align:center">Voce usa</td></tr>${rows}</table></div>`;
   }
-  const eggHTML = m.egg ? `<span class="egg-location">${m.egg}</span>` : `<span class="egg-location">N/A</span>`;
+  const eggText = m.egg || 'N/A';
   const linkHTML = m.link ? `<a class="game8-link" href="https://game8.co/games/Monster-Hunter-Stories-3/archives/${m.link}" target="_blank">Game8 Wiki &rarr;</a>` : '';
 
   const slug = iconSlug(m.name);
+  const eggSrc = m.egg ? `app/icons/eggs/${slug}.png` : 'app/icons/eggs/placeholder.svg';
   return `<div class="monster-card">
     <div class="card-header">
       <img class="monster-icon" src="app/icons/monsters/${slug}.png" alt="${m.name}" width="48" height="48" loading="lazy">
@@ -510,7 +513,14 @@ function renderCard(m){
       <div class="section-label">Resistencia a Ailments</div>
       <div class="ailment-grid">${ailHTML}</div>
     </div>
-    <div class="card-footer">${eggHTML}${linkHTML}</div>
+    <div class="card-footer">
+      <div class="egg-info">
+        <img class="egg-img" src="${eggSrc}" alt="${m.name} Egg" width="40" height="50" loading="lazy"
+             onerror="this.onerror=null;this.src='app/icons/eggs/placeholder.svg'">
+        <span class="egg-location">${eggText}</span>
+      </div>
+      ${linkHTML}
+    </div>
   </div>`;
 }
 

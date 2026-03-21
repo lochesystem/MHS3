@@ -2,6 +2,19 @@
 
 Todas as mudancas notaveis deste projeto serao documentadas neste arquivo.
 
+## [1.3.0] - 2026-03-21
+
+### Adicionado
+- Imagens dos ovos (eggs) dos monstros no footer dos cards (86 imagens extraidas do Game8/CAPCOM)
+- 86 PNGs de ovos em `app/icons/eggs/` nomeados por slug do monstro
+- Placeholder SVG para monstros sem ovo (Thunder Serpent Narwa, Wind Serpent Ibushi, Yama Tsukami, Bnahabra, Gargwa)
+- Fallback `onerror` nos `<img>` de ovos para exibir placeholder quando imagem nao encontrada
+- CSS responsivo para imagens de ovos (40x50px desktop, 34x42px mobile)
+
+### Alterado
+- Card footer agora exibe imagem do ovo + localizacao do ovo + link Game8
+- Service Worker atualizado para cache v4
+
 ## [1.2.0] - 2026-03-21
 
 ### Adicionado

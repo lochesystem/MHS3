@@ -69,6 +69,7 @@
       : '';
 
     const slug = iconSlug(m.name);
+    const eggSrc = m.egg ? `icons/eggs/${slug}.png` : 'icons/eggs/placeholder.svg';
 
     return `<article class="card">
       <div class="card__header">
@@ -95,7 +96,11 @@
         <div class="ailment-grid">${buildAilmentHTML(m.ailments)}</div>
       </div>
       <div class="card__footer">
-        <span class="card__egg">${eggText}</span>
+        <div class="card__egg-info">
+          <img class="card__egg-img" src="${eggSrc}" alt="${m.name} Egg" width="40" height="50" loading="lazy"
+               onerror="this.onerror=null;this.src='icons/eggs/placeholder.svg'">
+          <span class="card__egg">${eggText}</span>
+        </div>
         ${linkHTML}
       </div>
     </article>`;
