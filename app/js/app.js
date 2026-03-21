@@ -19,6 +19,10 @@
     return ELEM_CLASS_MAP[el] || 'none';
   }
 
+  function iconSlug(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
   function buildPatternHTML(patterns) {
     if (!patterns) return '';
     let rows = '';
@@ -64,8 +68,11 @@
       ? `<a class="card__link" href="https://game8.co/games/Monster-Hunter-Stories-3/archives/${m.link}" target="_blank" rel="noopener">Game8 Wiki &rarr;</a>`
       : '';
 
+    const slug = iconSlug(m.name);
+
     return `<article class="card">
       <div class="card__header">
+        <img class="card__icon" src="icons/monsters/${slug}.png" alt="${m.name}" width="48" height="48" loading="lazy">
         <h3 class="card__name">
           ${m.name}
           <span class="card__rank">${m.rank}</span>

@@ -205,12 +205,20 @@ a:hover { text-decoration: underline }
 /* Card Header */
 .card__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: .85rem 1rem;
   border-bottom: 1px solid var(--border);
   background: var(--surface2);
-  gap: .5rem;
+  gap: .65rem;
+}
+
+.card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .card__name {
@@ -582,6 +590,7 @@ a:hover { text-decoration: underline }
   .card__footer { padding: .5rem .85rem }
 
   .card__name { font-size: .95rem }
+  .card__icon { width: 40px; height: 40px }
 
   .weakness-grid {
     grid-template-columns: repeat(5, 1fr);

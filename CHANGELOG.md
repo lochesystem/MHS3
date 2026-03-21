@@ -2,6 +2,18 @@
 
 Todas as mudancas notaveis deste projeto serao documentadas neste arquivo.
 
+## [1.2.0] - 2026-03-21
+
+### Adicionado
+- Icones dos monstros nos cards (imagens 48x48px extraidas do Game8/CAPCOM)
+- 91 icones PNG em `app/icons/monsters/` nomeados por slug do monstro
+- Funcao `iconSlug()` para derivar nome do arquivo a partir do nome do monstro
+- CSS responsivo para icones (48px desktop, 40px mobile)
+
+### Alterado
+- Card header agora exibe icone + nome + rank
+- Service Worker atualizado para cache v3
+
 ## [1.1.0] - 2026-03-20
 
 ### Removido

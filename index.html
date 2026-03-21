@@ -38,9 +38,10 @@ select:focus{border-color:var(--accent)}
 .monster-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .15s,border-color .15s}
 .monster-card:hover{transform:translateY(-2px);border-color:var(--accent)}
 
-.card-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--surface2)}
+.card-header{display:flex;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--surface2);gap:.65rem}
 .card-header h3{font-size:1.1rem;display:flex;align-items:center;gap:.5rem}
 .monster-rank{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--accent2);color:#fff}
+.monster-icon{width:48px;height:48px;border-radius:8px;background:var(--bg);object-fit:contain;flex-shrink:0}
 
 .card-body{padding:1rem 1.2rem}
 .info-row{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-bottom:.8rem;font-size:.85rem}
@@ -460,6 +461,10 @@ function elemClass(el){
   return map[el]||"none";
 }
 
+function iconSlug(name){
+  return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+
 function renderCard(m){
   let weakHTML = '';
   ELEM_KEYS.forEach((k,i)=>{
@@ -486,8 +491,10 @@ function renderCard(m){
   const eggHTML = m.egg ? `<span class="egg-location">${m.egg}</span>` : `<span class="egg-location">N/A</span>`;
   const linkHTML = m.link ? `<a class="game8-link" href="https://game8.co/games/Monster-Hunter-Stories-3/archives/${m.link}" target="_blank">Game8 Wiki &rarr;</a>` : '';
 
+  const slug = iconSlug(m.name);
   return `<div class="monster-card">
     <div class="card-header">
+      <img class="monster-icon" src="app/icons/monsters/${slug}.png" alt="${m.name}" width="48" height="48" loading="lazy">
       <h3>${m.name} <span class="monster-rank">${m.rank}</span></h3>
     </div>
     <div class="card-body">
